@@ -1,0 +1,17 @@
+{
+  "name": "meu-sistema-gestao",
+  "version": "1.0.0",
+  "description": "Sistema de Gestão de Serviços e Relatórios Fotográficos",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "ejs": "^3.1.9",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "puppeteer": "^22.6.0",
+    "sqlite3": "^5.1.7"
+  }
+}
