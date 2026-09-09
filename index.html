@@ -1,99 +1,306 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Serviços & Relatórios</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f8; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; }
-        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input, textarea, button { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background: #2b6cb0; color: #fff; font-weight: bold; border: none; cursor: pointer; }
-        button:hover { opacity: 0.9; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Gestão & Relatórios - Conslin</title>
+  <!-- Fonte Inter e Ícones FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0056b3;
+      --primary-hover: #004085;
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --text-muted: #6c757d;
+      --border-color: #e0e0e0;
+      --success-color: #28a745;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 40px; }
+
+    /* Header e Navegação estilo App */
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 15px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand { font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+    
+    /* Abas de Navegação */
+    .nav-tabs {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 14px;
+      text-align: center;
+      background: none;
+      border: none;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    .tab-btn.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+    }
+
+    /* Layout principal */
+    .container { max-width: 800px; margin: 0 auto; padding: 0 15px; }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      margin-bottom: 18px;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Formulários */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; color: #444; }
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0,86,179,0.1); }
+    textarea.form-control { resize: vertical; min-height: 90px; }
+
+    /* Módulo de Fotos */
+    .photo-item {
+      background: #f8f9fa;
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn-add-photo {
+      background: #e9ecef;
+      color: #495057;
+      border: 1px dashed #adb5bd;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-add-photo:hover { background: #dee2e6; }
+
+    /* Botões Principais */
+    .btn-submit {
+      width: 100%;
+      background: var(--primary-color);
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,86,179,0.2);
+    }
+    .btn-submit:hover { background: var(--primary-hover); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Painel de Gestão & Relatórios Fotográficos</h1>
+  <header>
+    <div class="brand"><i class="fa-solid fa-clipboard-check"></i> Conslin Gestão & Vistorias</div>
+  </header>
 
-    <div class="card">
-        <h2>Emitir Relatório Técnico com Fotos</h2>
-        <form id="formRelatorio" enctype="multipart/form-data">
-            <input type="text" id="relTitulo" placeholder="Título do Relatório (Ex: Inspeção de Fachada)" required>
-            <input type="text" id="relCliente" placeholder="Cliente / Condomínio" required>
-            <input type="text" id="relLocal" placeholder="Local da Inspeção" required>
-            <input type="date" id="relData" required>
-            
-            <textarea id="relObservacoes" rows="3" placeholder="Considerações técnicas / Diagnóstico..."></textarea>
+  <!-- Abas de Navegação -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('relatorio')"><i class="fa-solid fa-file-pdf"></i> Novo Relatório</button>
+    <button class="tab-btn" onclick="switchTab('os')"><i class="fa-solid fa-list-check"></i> Minhas OS</button>
+  </div>
 
-            <h3>Fotos e Apontamentos</h3>
-            <div id="containerFotos">
-                <div class="item-foto" style="display: flex; gap: 10px;">
-                    <input type="file" class="inputFoto" accept="image/*" required style="width: 40%;">
-                    <input type="text" class="inputLegenda" placeholder="Descrição / Legenda da foto" required style="width: 60%;">
-                </div>
+  <div class="container">
+    
+    <!-- ABA 1: EMISSÃO DE RELATÓRIO -->
+    <div id="tab-relatorio" class="tab-content active">
+      <form id="formRelatorio">
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-building"></i> Dados do Atendimento</div>
+          
+          <div class="form-group">
+            <label>Título do Relatório</label>
+            <input type="text" id="titulo" class="form-control" placeholder="Ex: Inspeção Técnica de Fachada e Infiltrações" required>
+          </div>
+
+          <div class="form-group">
+            <label>Cliente / Condomínio</label>
+            <input type="text" id="cliente" class="form-control" placeholder="Ex: Condomínio Residencial Parque São Rafael" required>
+          </div>
+
+          <div class="form-group">
+            <label>Local / Endereço</label>
+            <input type="text" id="local" class="form-control" placeholder="Ex: Rua Santo André Avelino, 191 - Bloco B" required>
+          </div>
+
+          <div class="form-group">
+            <label>Data da Inspeção</label>
+            <input type="date" id="data" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label>Considerações Técnicas / Diagnóstico Inicial</label>
+            <textarea id="diagnostico" class="form-control" placeholder="Descreva o estado geral, falhas identificadas ou recomendações normativas..."></textarea>
+          </div>
+        </div>
+
+        <!-- CARD DE FOTOS E APONTAMENTOS -->
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-camera"></i> Registro Fotográfico e Apontamentos</div>
+          
+          <div id="containerFotos">
+            <div class="photo-item">
+              <input type="file" accept="image/*" class="form-control foto-file" required>
+              <input type="text" class="form-control foto-legenda" placeholder="Descrição / Legenda do apontamento (Ex: Fissura vertical no pilar da garagem)">
             </div>
+          </div>
 
-            <button type="button" onclick="adicionarCampoFoto()" style="background: #4a5568;">+ Adicionar Outra Foto</button>
-            <button type="submit" style="margin-top: 15px;">Gerar Relatório Fotográfico em PDF</button>
-        </form>
+          <button type="button" class="btn-add-photo" onclick="adicionarFoto()">
+            <i class="fa-solid fa-plus"></i> Adicionar Mais Fotos
+          </button>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          <i class="fa-solid fa-file-arrow-down"></i> Gerar Relatório Técnico em PDF
+        </button>
+      </form>
     </div>
-</div>
 
-<script>
+    <!-- ABA 2: LISTA / ORDENS DE SERVIÇO -->
+    <div id="tab-os" class="tab-content">
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-folder-open"></i> Histórico de Vistorias e OS</div>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Todas as vistorias geradas e armazenadas estarão listadas aqui para consulta rápida.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
     // URL da API hospedada no Render
-  const API_URL = 'https://meu-sistema-gestao.onrender.com/api/relatorios/pdf';
+    const API_URL = 'https://meu-sistema-gestao.onrender.com/api/relatorios/pdf';
 
-    document.getElementById('relData').valueAsDate = new Date();
+    // Data padrão para hoje
+    document.getElementById('data').valueAsDate = new Date();
 
-    function adicionarCampoFoto() {
-        const container = document.getElementById('containerFotos');
-        const div = document.createElement('div');
-        div.className = 'item-foto';
-        div.style = 'display: flex; gap: 10px; margin-top: 5px;';
-        div.innerHTML = `
-            <input type="file" class="inputFoto" accept="image/*" required style="width: 40%;">
-            <input type="text" class="inputLegenda" placeholder="Descrição / Legenda da foto" required style="width: 60%;">
-        `;
-        container.appendChild(div);
+    // Função de alternância de Abas
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      if(tab === 'relatorio') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-relatorio').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-os').classList.add('active');
+      }
     }
 
+    // Adicionar mais campos de fotos dinamicamente
+    function adicionarFoto() {
+      const container = document.getElementById('containerFotos');
+      const div = document.createElement('div');
+      div.className = 'photo-item';
+      div.innerHTML = `
+        <input type="file" accept="image/*" class="form-control foto-file">
+        <input type="text" class="form-control foto-legenda" placeholder="Descrição / Legenda do apontamento">
+      `;
+      container.appendChild(div);
+    }
+
+    // Envio do Formulário para a API no Render
     document.getElementById('formRelatorio').addEventListener('submit', async (e) => {
-        e.preventDefault();
+      e.preventDefault();
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gerando PDF, aguarde...';
+      btn.disabled = true;
 
+      try {
         const formData = new FormData();
-        formData.append('titulo', document.getElementById('relTitulo').value);
-        formData.append('cliente', document.getElementById('relCliente').value);
-        formData.append('local', document.getElementById('relLocal').value);
-        formData.append('data', document.getElementById('relData').value);
-        formData.append('observacoes', document.getElementById('relObservacoes').value);
+        formData.append('titulo', document.getElementById('titulo').value);
+        formData.append('cliente', document.getElementById('cliente').value);
+        formData.append('local', document.getElementById('local').value);
+        formData.append('data', document.getElementById('data').value);
+        formData.append('diagnostico', document.getElementById('diagnostico').value);
 
-        const linhasFotos = document.querySelectorAll('.item-foto');
-        linhasFotos.forEach(linha => {
-            const fileInput = linha.querySelector('.inputFoto');
-            const legendaInput = linha.querySelector('.inputLegenda');
-            if (fileInput.files[0]) {
-                formData.append('fotos', fileInput.files[0]);
-                formData.append('descricoesFotos', legendaInput.value);
-            }
+        // Coleta de arquivos e legendas
+        const files = document.querySelectorAll('.foto-file');
+        const legendas = document.querySelectorAll('.foto-legenda');
+
+        files.forEach((fileInput, index) => {
+          if (fileInput.files[0]) {
+            formData.append('fotos', fileInput.files[0]);
+            formData.append('legendas', legendas[index].value || '');
+          }
         });
 
-        try {
-            const response = await fetch(API_URL, { method: 'POST', body: formData });
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                window.open(url, '_blank');
-            } else {
-                alert('Erro ao gerar relatório.');
-            }
-        } catch (err) {
-            alert('Falha na conexão com o servidor.');
-        }
-    });
-</script>
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          body: formData
+        });
 
+        if (!response.ok) throw new Error('Erro na geração do PDF');
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Relatorio_${Date.now()}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } catch (err) {
+        alert('Ocorreu um erro ao gerar o PDF. Verifique os dados ou o servidor no Render.');
+        console.error(err);
+      } finally {
+        btn.innerHTML = '<i class="fa-solid fa-file-arrow-down"></i> Gerar Relatório Técnico em PDF';
+        btn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
