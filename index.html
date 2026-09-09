@@ -17,6 +17,8 @@
       --text-muted: #6c757d;
       --border-color: #dcdfe3;
       --active-color: #d9534f;
+      --danger-color: #dc3545;
+      --warning-color: #ffc107;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -112,6 +114,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      justify-content: space-between;
     }
 
     /* FORMULÁRIOS E TABELAS */
@@ -142,6 +145,25 @@
       text-align: left;
     }
     table.data-table th { background-color: #f0f3f6; font-weight: bold; }
+
+    /* BOTÕES DE AÇÃO NA TABELA */
+    .action-btns { display: flex; gap: 8px; }
+    .btn-action {
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: white;
+    }
+    .btn-edit { background-color: #ff9800; }
+    .btn-edit:hover { background-color: #e68a00; }
+    .btn-delete { background-color: #d9534f; }
+    .btn-delete:hover { background-color: #c9302c; }
 
     .photo-item {
       background: #f8f9fa;
@@ -176,7 +198,6 @@
     }
     .btn-submit:hover { background: var(--primary-hover); }
 
-    /* CONTROLE DE EXIBIÇÃO DAS ABAS */
     .tab-section { display: none; }
     .tab-section.active { display: block; }
   </style>
@@ -190,7 +211,7 @@
       <div class="user-profile">
         <div class="user-title"><i class="fa-solid fa-user-gear"></i> Administrador Conslin</div>
         <div class="user-role">(Perfil: <strong>Admin</strong>)</div>
-        <button class="btn-logout" onclick="alert('Sessão encerrada com sucesso.')"><i class="fa-solid fa-door-open"></i> Sair / Logout</button>
+        <button class="btn-logout" onclick="alert('Sessão encerrada.')"><i class="fa-solid fa-door-open"></i> Sair / Logout</button>
       </div>
 
       <div class="nav-header">Navegação</div>
@@ -235,7 +256,9 @@
       <!-- ABA 1: DASHBOARD & METAS -->
       <div id="tab-dashboard" class="tab-section">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-chart-line"></i> Dashboard & Metas Anuais</div>
+          <div class="card-title">
+            <span><i class="fa-solid fa-chart-line"></i> Dashboard & Metas Anuais</span>
+          </div>
           <div class="grid-2">
             <div style="background:#eef6ff; padding:15px; border-radius:8px;">
               <h4>Meta de Faturamento (Mês)</h4>
@@ -252,26 +275,60 @@
       <!-- ABA 2: CADASTRO DE CLIENTES -->
       <div id="tab-clientes" class="tab-section">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-users"></i> Cadastro de Clientes & Condomínios</div>
-          <form onsubmit="event.preventDefault(); alert('Cliente cadastrado!');">
+          <div class="card-title">
+            <span><i class="fa-solid fa-users"></i> Cadastro de Clientes & Condomínios</span>
+          </div>
+          <form onsubmit="event.preventDefault(); adicionarCliente();">
             <div class="grid-2">
-              <div class="form-group"><label>Nome do Cliente / Condomínio</label><input type="text" class="form-control" placeholder="Ex: Condomínio Paz 1" required></div>
-              <div class="form-group"><label>Contato / Síndico(a)</label><input type="text" class="form-control" placeholder="Ex: Regina"></div>
+              <div class="form-group"><label>Nome do Cliente / Condomínio</label><input type="text" id="cli-nome" class="form-control" placeholder="Ex: Condomínio Paz 1" required></div>
+              <div class="form-group"><label>Contato / Síndico(a)</label><input type="text" id="cli-contato" class="form-control" placeholder="Ex: Regina"></div>
             </div>
             <div class="grid-2">
-              <div class="form-group"><label>Telefone / WhatsApp</label><input type="text" class="form-control" placeholder="(11) 98000-0000"></div>
-              <div class="form-group"><label>Endereço</label><input type="text" class="form-control" placeholder="Rua / Número / Bairro"></div>
+              <div class="form-group"><label>Telefone / WhatsApp</label><input type="text" id="cli-tel" class="form-control" placeholder="(11) 98000-0000"></div>
+              <div class="form-group"><label>Endereço</label><input type="text" id="cli-end" class="form-control" placeholder="Rua / Número / Bairro"></div>
             </div>
-            <button class="btn-submit" style="width: auto; padding: 8px 20px;">Salvar Cliente</button>
+            <button type="submit" class="btn-submit" style="width: auto; padding: 8px 20px;">+ Salvar Cliente</button>
           </form>
+
+          <table class="data-table" id="tabela-clientes">
+            <thead>
+              <tr><th>Cliente / Condomínio</th><th>Contato</th><th>Telefone</th><th>Ações</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Condomínio Paz 1</td>
+                <td>Regina</td>
+                <td>(11) 98888-7777</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-action btn-edit" onclick="editarLinha(this)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                    <button class="btn-action btn-delete" onclick="excluirLinha(this)"><i class="fa-solid fa-trash"></i> Excluir</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>Condomínio Safira</td>
+                <td>Fábio</td>
+                <td>(11) 97777-6666</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-action btn-edit" onclick="editarLinha(this)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                    <button class="btn-action btn-delete" onclick="excluirLinha(this)"><i class="fa-solid fa-trash"></i> Excluir</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- ABA 3: NOVO ATENDIMENTO / ORÇAMENTO & RELATÓRIO (PRINCIPAL) -->
+      <!-- ABA 3: NOVO ATENDIMENTO / ORÇAMENTO & RELATÓRIO -->
       <div id="tab-novo-atendimento" class="tab-section active">
         <form id="formRelatorio">
           <div class="card">
-            <div class="card-title"><i class="fa-solid fa-file-signature"></i> Emissão de Relatório Técnico & Vistoria</div>
+            <div class="card-title">
+              <span><i class="fa-solid fa-file-signature"></i> Emissão de Relatório Técnico & Vistoria</span>
+            </div>
             
             <div class="form-group">
               <label>Título do Relatório</label>
@@ -300,7 +357,9 @@
           </div>
 
           <div class="card">
-            <div class="card-title"><i class="fa-solid fa-camera"></i> Registro Fotográfico</div>
+            <div class="card-title">
+              <span><i class="fa-solid fa-camera"></i> Registro Fotográfico</span>
+            </div>
             <div id="containerFotos">
               <div class="photo-item">
                 <input type="file" accept="image/*" class="form-control foto-file" required>
@@ -317,14 +376,38 @@
       <!-- ABA 4: GESTÃO DE ATENDIMENTOS -->
       <div id="tab-gestao-atendimentos" class="tab-section">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-list-check"></i> Gestão de Atendimentos & Vistorias</div>
+          <div class="card-title">
+            <span><i class="fa-solid fa-list-check"></i> Gestão de Atendimentos & Vistorias</span>
+          </div>
           <table class="data-table">
             <thead>
-              <tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Status</th></tr>
+              <tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Status</th><th>Ações</th></tr>
             </thead>
             <tbody>
-              <tr><td>08/09/2026</td><td>Cond. Paz 1</td><td>Impermeabilização do Telhado</td><td><span style="color:green; font-weight:bold;">Concluído</span></td></tr>
-              <tr><td>05/09/2026</td><td>Cond. Safira</td><td>Manutenção Elétrica</td><td><span style="color:orange; font-weight:bold;">Em Andamento</span></td></tr>
+              <tr>
+                <td>08/09/2026</td>
+                <td>Cond. Paz 1</td>
+                <td>Impermeabilização do Telhado</td>
+                <td><span style="color:green; font-weight:bold;">Concluído</span></td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-action btn-edit" onclick="editarLinha(this)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                    <button class="btn-action btn-delete" onclick="excluirLinha(this)"><i class="fa-solid fa-trash"></i> Excluir</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>05/09/2026</td>
+                <td>Cond. Safira</td>
+                <td>Manutenção Elétrica</td>
+                <td><span style="color:orange; font-weight:bold;">Em Andamento</span></td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-action btn-edit" onclick="editarLinha(this)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                    <button class="btn-action btn-delete" onclick="excluirLinha(this)"><i class="fa-solid fa-trash"></i> Excluir</button>
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -333,14 +416,38 @@
       <!-- ABA 5: CONTAS E PARCELAS A RECEBER -->
       <div id="tab-contas-receber" class="tab-section">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-hand-holding-dollar"></i> Contas e Parcelas a Receber</div>
+          <div class="card-title">
+            <span><i class="fa-solid fa-hand-holding-dollar"></i> Contas e Parcelas a Receber</span>
+          </div>
           <table class="data-table">
             <thead>
-              <tr><th>Vencimento</th><th>Cliente</th><th>Valor</th><th>Status</th></tr>
+              <tr><th>Vencimento</th><th>Cliente</th><th>Valor</th><th>Status</th><th>Ações</th></tr>
             </thead>
             <tbody>
-              <tr><td>15/09/2026</td><td>Cond. Metrocasa</td><td>R$ 2.500,00</td><td>Pendente</td></tr>
-              <tr><td>20/09/2026</td><td>Cond. Serra do Mar</td><td>R$ 1.800,00</td><td>Pendente</td></tr>
+              <tr>
+                <td>15/09/2026</td>
+                <td>Cond. Metrocasa</td>
+                <td>R$ 2.500,00</td>
+                <td>Pendente</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-action btn-edit" onclick="editarLinha(this)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                    <button class="btn-action btn-delete" onclick="excluirLinha(this)"><i class="fa-solid fa-trash"></i> Excluir</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>20/09/2026</td>
+                <td>Cond. Serra do Mar</td>
+                <td>R$ 1.800,00</td>
+                <td>Pendente</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-action btn-edit" onclick="editarLinha(this)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                    <button class="btn-action btn-delete" onclick="excluirLinha(this)"><i class="fa-solid fa-trash"></i> Excluir</button>
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -349,23 +456,63 @@
       <!-- ABA 6: PRESTADORES & FORNECEDORES -->
       <div id="tab-prestadores" class="tab-section">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-truck-field"></i> Prestadores & Fornecedores</div>
-          <p>Módulo de gestão de contatos de serralheria, materiais e parceiros de obras.</p>
+          <div class="card-title">
+            <span><i class="fa-solid fa-truck-field"></i> Prestadores & Fornecedores</span>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Fornecedor / Prestador</th><th>Especialidade</th><th>Telefone</th><th>Ações</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Paulo Serralheiro</td>
+                <td>Estruturas e Portões</td>
+                <td>(11) 96666-5555</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-action btn-edit" onclick="editarLinha(this)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                    <button class="btn-action btn-delete" onclick="excluirLinha(this)"><i class="fa-solid fa-trash"></i> Excluir</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <!-- ABA 7: CONTAS A PAGAR -->
       <div id="tab-contas-pagar" class="tab-section">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-file-invoice-dollar"></i> Contas a Pagar, Dívidas & Acordos</div>
-          <p>Painel de controle financeiro de custos operacionais e materiais de obras.</p>
+          <div class="card-title">
+            <span><i class="fa-solid fa-file-invoice-dollar"></i> Contas a Pagar, Dívidas & Acordos</span>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Vencimento</th><th>Descrição / Fornecedor</th><th>Valor</th><th>Ações</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>10/09/2026</td>
+                <td>Leroy Merlin - Materiais de Pintura</td>
+                <td>R$ 450,00</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-action btn-edit" onclick="editarLinha(this)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                    <button class="btn-action btn-delete" onclick="excluirLinha(this)"><i class="fa-solid fa-trash"></i> Excluir</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <!-- ABA 8: REGISTRAR PAGAMENTOS -->
       <div id="tab-registrar-pagamentos" class="tab-section">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-receipt"></i> Registrar Pagamentos</div>
+          <div class="card-title">
+            <span><i class="fa-solid fa-receipt"></i> Registrar Pagamentos</span>
+          </div>
           <p>Lançamento de baixas financeiras de recebimentos e comprovantes.</p>
         </div>
       </div>
@@ -373,7 +520,9 @@
       <!-- ABA 9: FLUXO DE CAIXA & DRE -->
       <div id="tab-fluxo-caixa" class="tab-section">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-scale-balanced"></i> Fluxo de Caixa & DRE Conslin</div>
+          <div class="card-title">
+            <span><i class="fa-solid fa-scale-balanced"></i> Fluxo de Caixa & DRE Conslin</span>
+          </div>
           <p>Balanço consolidado entre entradas, custos de equipe, materiais e lucro líquido.</p>
         </div>
       </div>
@@ -381,8 +530,27 @@
       <!-- ABA 10: GERENCIAR USUÁRIOS -->
       <div id="tab-gerenciar-usuarios" class="tab-section">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-user-gear"></i> Gerenciar Usuários & Permissões</div>
-          <p>Controle de acessos de administradores e técnicos do sistema.</p>
+          <div class="card-title">
+            <span><i class="fa-solid fa-user-gear"></i> Gerenciar Usuários & Permissões</span>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Ações</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Joselino Aires</td>
+                <td>conslinservicos@gmail.com</td>
+                <td>Admin</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-action btn-edit" onclick="editarLinha(this)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                    <button class="btn-action btn-delete" onclick="excluirLinha(this)"><i class="fa-solid fa-trash"></i> Excluir</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -394,15 +562,60 @@
     const API_URL = 'https://meu-sistema-gestao.onrender.com/api/relatorios/pdf';
     document.getElementById('data').valueAsDate = new Date();
 
-    // Função de Troca de Abas
+    // Troca de Abas
     function navigate(tabId, element) {
-      // 1. Atualiza visual do menu lateral
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
       element.classList.add('active');
 
-      // 2. Esconde todas as seções e mostra a selecionada
       document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
+    }
+
+    // Função de Excluir Linha da Tabela
+    function excluirLinha(btn) {
+      if (confirm('Tem certeza que deseja excluir este registro?')) {
+        const row = btn.closest('tr');
+        row.remove();
+      }
+    }
+
+    // Função de Editar Linha da Tabela
+    function editarLinha(btn) {
+      const row = btn.closest('tr');
+      const cells = row.querySelectorAll('td:not(:last-child)');
+      cells.forEach(cell => {
+        const novoValor = prompt('Editar campo:', cell.innerText);
+        if (novoValor !== null && novoValor.trim() !== '') {
+          cell.innerText = novoValor;
+        }
+      });
+    }
+
+    // Adicionar Cliente na Tabela
+    function adicionarCliente() {
+      const nome = document.getElementById('cli-nome').value;
+      const contato = document.getElementById('cli-contato').value || '-';
+      const tel = document.getElementById('cli-tel').value || '-';
+
+      const tbody = document.querySelector('#tabela-clientes tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${nome}</td>
+        <td>${contato}</td>
+        <td>${tel}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn-action btn-edit" onclick="editarLinha(this)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+            <button class="btn-action btn-delete" onclick="excluirLinha(this)"><i class="fa-solid fa-trash"></i> Excluir</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      document.getElementById('cli-nome').value = '';
+      document.getElementById('cli-contato').value = '';
+      document.getElementById('cli-tel').value = '';
+      document.getElementById('cli-end').value = '';
     }
 
     function adicionarFoto() {
