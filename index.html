@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Serviços & Relatórios</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f8; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input, textarea, button { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background: #2b6cb0; color: #fff; font-weight: bold; border: none; cursor: pointer; }
+        button:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Painel de Gestão & Relatórios Fotográficos</h1>
+
+    <div class="card">
+        <h2>Emitir Relatório Técnico com Fotos</h2>
+        <form id="formRelatorio" enctype="multipart/form-data">
+            <input type="text" id="relTitulo" placeholder="Título do Relatório (Ex: Inspeção de Fachada)" required>
+            <input type="text" id="relCliente" placeholder="Cliente / Condomínio" required>
+            <input type="text" id="relLocal" placeholder="Local da Inspeção" required>
+            <input type="date" id="relData" required>
+            
+            <textarea id="relObservacoes" rows="3" placeholder="Considerações técnicas / Diagnóstico..."></textarea>
+
+            <h3>Fotos e Apontamentos</h3>
+            <div id="containerFotos">
+                <div class="item-foto" style="display: flex; gap: 10px;">
+                    <input type="file" class="inputFoto" accept="image/*" required style="width: 40%;">
+                    <input type="text" class="inputLegenda" placeholder="Descrição / Legenda da foto" required style="width: 60%;">
+                </div>
+            </div>
+
+            <button type="button" onclick="adicionarCampoFoto()" style="background: #4a5568;">+ Adicionar Outra Foto</button>
+            <button type="submit" style="margin-top: 15px;">Gerar Relatório Fotográfico em PDF</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // URL da API hospedada no Render
+  const API_URL = 'https://meu-sistema-gestao.onrender.com/api/relatorios/pdf';
+
+    document.getElementById('relData').valueAsDate = new Date();
+
+    function adicionarCampoFoto() {
+        const container = document.getElementById('containerFotos');
+        const div = document.createElement('div');
+        div.className = 'item-foto';
+        div.style = 'display: flex; gap: 10px; margin-top: 5px;';
+        div.innerHTML = `
+            <input type="file" class="inputFoto" accept="image/*" required style="width: 40%;">
+            <input type="text" class="inputLegenda" placeholder="Descrição / Legenda da foto" required style="width: 60%;">
+        `;
+        container.appendChild(div);
+    }
+
+    document.getElementById('formRelatorio').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('titulo', document.getElementById('relTitulo').value);
+        formData.append('cliente', document.getElementById('relCliente').value);
+        formData.append('local', document.getElementById('relLocal').value);
+        formData.append('data', document.getElementById('relData').value);
+        formData.append('observacoes', document.getElementById('relObservacoes').value);
+
+        const linhasFotos = document.querySelectorAll('.item-foto');
+        linhasFotos.forEach(linha => {
+            const fileInput = linha.querySelector('.inputFoto');
+            const legendaInput = linha.querySelector('.inputLegenda');
+            if (fileInput.files[0]) {
+                formData.append('fotos', fileInput.files[0]);
+                formData.append('descricoesFotos', legendaInput.value);
+            }
+        });
+
+        try {
+            const response = await fetch(API_URL, { method: 'POST', body: formData });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank');
+            } else {
+                alert('Erro ao gerar relatório.');
+            }
+        } catch (err) {
+            alert('Falha na conexão com o servidor.');
+        }
+    });
+</script>
+
+</body>
+</html>
